@@ -34,6 +34,15 @@ def download_image(url, folder='images/'):
     return filepath
 
 
+def write_comments(comments, filename, folder='comments/'):
+    os.makedirs(folder, exist_ok=True)
+    filepath = os.path.join(folder, sanitize_filename(filename))
+    with open(filepath, 'w') as file:
+        for comment in comments:
+            file.write(comment + os.linesep)
+    return filepath
+
+
 def parse_book_page(url):
     response = requests.get(url, verify=False)
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -43,10 +52,15 @@ def parse_book_page(url):
     title_tag = content.find('h1')
     parts_of_title = title_tag.text.split('::')
     img_tag = content.find('div', 'bookimage').find('img')
+    comments = []
+    comment_tags = soup.find_all('div', 'texts')
+    if comment_tags:
+        comments = [item.find('span', 'black').text for item in comment_tags]
     book_properties = {
         'name': parts_of_title[0].strip(),
         'autor': parts_of_title[1].strip(),
-        'img_url': img_tag.attrs['src']
+        'img_url': img_tag.attrs['src'],
+        'comments': comments
     }
     return book_properties
 
@@ -64,7 +78,9 @@ def main(root_url):
             book_filepath = download_txt_file(txt_download_url, book_filename)
             img_download_url = f'{root_url}/{book_properties["img_url"]}'
             img_filepath = download_image(img_download_url)
-            print(f'The book, shot loaded successfully from {book_url}')
+            if book_properties['comments']:
+                write_comments(book_properties['comments'], book_filename)
+            print(f'The book data loaded successfully from {book_url}')
 
         except requests.HTTPError:
             print(f'Book from {book_url} not loaded something was wrong!')
