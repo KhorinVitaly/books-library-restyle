@@ -56,10 +56,13 @@ def parse_book_page(url):
     comment_tags = soup.find_all('div', 'texts')
     if comment_tags:
         comments = [item.find('span', 'black').text for item in comment_tags]
+    genre_tags = content.find('span', 'd_book').find_all('a')
+    genres = [item.text for item in genre_tags]
     book_properties = {
         'name': parts_of_title[0].strip(),
         'autor': parts_of_title[1].strip(),
         'img_url': img_tag.attrs['src'],
+        'genres': genres,
         'comments': comments
     }
     return book_properties
@@ -72,7 +75,7 @@ def main(root_url):
         if not book_properties:
             print(f'Cant parse {book_url} check the url!')
             continue
-        book_filename = f'{id}.{book_properties["autor"]}_{book_properties["name"]}.txt'
+        book_filename = f'{id}.{book_properties["autor"]} {book_properties["name"]}.txt'
         try:
             txt_download_url = f'{root_url}/txt.php?id={id}'
             book_filepath = download_txt_file(txt_download_url, book_filename)
@@ -80,7 +83,8 @@ def main(root_url):
             img_filepath = download_image(img_download_url)
             if book_properties['comments']:
                 write_comments(book_properties['comments'], book_filename)
-            print(f'The book data loaded successfully from {book_url}')
+            print(book_filename)
+            print(book_properties['genres'])
 
         except requests.HTTPError:
             print(f'Book from {book_url} not loaded something was wrong!')
