@@ -90,4 +90,5 @@ def main():
             tqdm.write(f'Book from {book_url} not loaded something was wrong!')
 
 
-main()
+if __name__ == '__main__':
+    main()
