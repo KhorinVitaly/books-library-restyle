@@ -65,8 +65,14 @@ def parse_book_page(html_text):
     return book_properties
 
 
-def main(root_url, start_id, end_id):
-    for id in tqdm(range(start_id, end_id)):
+def main():
+    root_url = 'https://tululu.org'
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--start_id', help='Начальный id книги', default=1)
+    parser.add_argument('--end_id', help='Конечный id книги', default=11)
+    args = parser.parse_args()
+    for id in tqdm(range(args.start_id, args.end_id)):
         book_url = f'{root_url}/b{id}/'
         try:
             response = requests.get(book_url, verify=False)
@@ -84,10 +90,4 @@ def main(root_url, start_id, end_id):
             tqdm.write(f'Book from {book_url} not loaded something was wrong!')
 
 
-if __name__ == '__main__':
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--start_id', help='Начальный id книги', default=1)
-    parser.add_argument('--end_id', help='Конечный id книги', default=11)
-    args = parser.parse_args()
-    main('https://tululu.org', args.start_id, args.end_id)
+main()
