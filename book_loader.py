@@ -40,7 +40,7 @@ def write_comments(comments, filename, folder='comments/'):
     filepath = os.path.join(folder, sanitize_filename(filename))
     with open(filepath, 'w') as file:
         for comment in comments:
-            file.write(comment + os.linesep)
+            file.write(f'{comment}{os.linesep}')
     return filepath
 
 
