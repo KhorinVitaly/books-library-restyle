@@ -5,6 +5,7 @@ import urllib3
 from pathvalidate import sanitize_filename
 import urllib.parse
 import argparse
+from tqdm import tqdm
 
 
 def download_txt_file(url, filename, folder='books/'):
@@ -65,7 +66,7 @@ def parse_book_page(html_text):
 
 
 def main(root_url, start_id, end_id):
-    for id in range(start_id, end_id):
+    for id in tqdm(range(start_id, end_id)):
         book_url = f'{root_url}/b{id}/'
         try:
             response = requests.get(book_url, verify=False)
@@ -76,11 +77,11 @@ def main(root_url, start_id, end_id):
             download_image(f'{root_url}/{book_properties["img_url"]}')
             if book_properties['comments']:
                 write_comments(book_properties['comments'], book_filename)
-            print(book_filename)
-            print(book_properties['genres'])
+            tqdm.write(book_properties['name'])
+            tqdm.write(str(book_properties['genres']))
 
         except requests.HTTPError:
-            print(f'Book from {book_url} not loaded something was wrong!')
+            tqdm.write(f'Book from {book_url} not loaded something was wrong!')
 
 
 if __name__ == '__main__':
