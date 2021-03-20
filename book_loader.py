@@ -49,15 +49,15 @@ def parse_book_page(html_text):
     content_tag = soup.find('div', id='content')
 
     title_tag = content_tag.find('h1')
-    parts_of_title = title_tag.text.split('::')
+    name, autor = title_tag.text.split('::')
 
     img_tag = content_tag.find('div', 'bookimage').find('img')
     comment_tags = soup.find_all('div', 'texts')
     genre_tags = content_tag.find('span', 'd_book').find_all('a')
 
     book_properties = {
-        'name': parts_of_title[0].strip(),
-        'autor': parts_of_title[1].strip(),
+        'name': name.strip(),
+        'autor': autor.strip(),
         'img_url': img_tag.attrs['src'],
         'genres': [item.text for item in genre_tags],
         'comments': [item.find('span', 'black').text for item in comment_tags] if comment_tags else []
