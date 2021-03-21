@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 def download_txt_file(url, filename, folder='books/'):
     response = requests.get(url, verify=False)
-    check_for_redirect(response)
+    check_response(response)
     os.makedirs(folder, exist_ok=True)
     filepath = os.path.join(folder, sanitize_filename(filename))
     with open(filepath, 'wb') as file:
@@ -18,14 +18,14 @@ def download_txt_file(url, filename, folder='books/'):
     return filepath
 
 
-def check_for_redirect(response):
-    if response.history:
+def check_response(response):
+    if response.history or not response.ok:
         raise requests.HTTPError
 
 
 def download_image(url, folder='images/'):
     response = requests.get(url, verify=False)
-    check_for_redirect(response)
+    check_response(response)
     os.makedirs(folder, exist_ok=True)
     url_parts = urllib.parse.urlsplit(url, scheme='', allow_fragments=True)
     filename = os.path.basename(url_parts.path)
@@ -76,7 +76,7 @@ def main():
         book_url = f'{root_url}/b{id}/'
         try:
             response = requests.get(book_url, verify=False)
-            check_for_redirect(response)
+            check_response(response)
             book_properties = parse_book_page(response.text)
             book_filename = f'{id}.{book_properties["autor"]} {book_properties["name"]}.txt'
             download_txt_file(f'{root_url}/txt.php?id={id}', book_filename)
@@ -88,6 +88,8 @@ def main():
 
         except requests.HTTPError:
             tqdm.write(f'Book from {book_url} not loaded something was wrong!')
+        except requests.ConnectionError:
+            tqdm.write(f'Error, cant connected to site!')
 
 
 if __name__ == '__main__':
