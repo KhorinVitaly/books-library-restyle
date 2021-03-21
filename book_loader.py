@@ -8,8 +8,8 @@ import argparse
 from tqdm import tqdm
 
 
-def download_txt_file(url, filename, folder='books/'):
-    response = requests.get(url, verify=False)
+def download_txt_file(url, params, filename, folder='books/'):
+    response = requests.get(url, verify=False, params=params)
     check_response(response)
     os.makedirs(folder, exist_ok=True)
     filepath = os.path.join(folder, sanitize_filename(filename))
@@ -79,7 +79,7 @@ def main():
             check_response(response)
             book_properties = parse_book_page(response.text)
             book_filename = f'{id}.{book_properties["autor"]} {book_properties["name"]}.txt'
-            download_txt_file(f'{root_url}/txt.php?id={id}', book_filename)
+            download_txt_file(f'{root_url}/txt.php', {'id': id}, book_filename)
             download_image(f'{root_url}/{book_properties["img_url"]}')
             if book_properties['comments']:
                 write_comments(book_properties['comments'], book_filename)
