@@ -14,7 +14,7 @@ def download_txt_file(url, params, filename, folder='books/'):
     os.makedirs(folder, exist_ok=True)
     filepath = os.path.join(folder, sanitize_filename(filename))
     with open(filepath, 'wb') as file:
-        file.write(response.content)
+        file.write(response.text)
     return filepath
 
 
