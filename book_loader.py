@@ -13,14 +13,15 @@ def download_txt_file(url, params, filename, folder='books/'):
     check_response(response)
     os.makedirs(folder, exist_ok=True)
     filepath = os.path.join(folder, sanitize_filename(filename))
-    with open(filepath, 'wb') as file:
+    with open(filepath, 'w') as file:
         file.write(response.text)
     return filepath
 
 
 def check_response(response):
-    if response.history or not response.ok:
-        raise requests.HTTPError
+    response.raise_for_status()
+    if response.history:
+        raise requests.HTTPError('Error: redirect detected!')
 
 
 def download_image(url, folder='images/'):
@@ -86,8 +87,8 @@ def main():
             tqdm.write(book_properties['name'])
             tqdm.write(str(book_properties['genres']))
 
-        except requests.HTTPError:
-            tqdm.write(f'Book from {book_url} not loaded something was wrong!')
+        except requests.HTTPError as e:
+            tqdm.write(f'Book from {book_url} not loaded something was wrong: {str(e)}')
         except requests.ConnectionError:
             tqdm.write(f'Error, cant connected to site!')
 
