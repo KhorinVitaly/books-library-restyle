@@ -131,4 +131,5 @@ dmypy.json
 books/
 comments/
 images/
+parse_results/
 books.json
