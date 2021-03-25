@@ -30,7 +30,7 @@ def fetch_book_data(book_url, id):
 
 def write_to_json_file(data, filename):
     with open(f"{filename}.json", "w", encoding='utf8') as my_file:
-        json.dump(data, my_file, ensure_ascii=False)
+        json.dump(data, my_file, ensure_ascii=False, sort_keys=True, indent=4)
 
 
 def main():
@@ -51,7 +51,8 @@ def main():
             book_url = urljoin(ROOT_URL, href)
             id = int(href.replace('b', '').replace('/', ''))
             book_properties = fetch_book_data(book_url, id)
-            science_fiction_category_books.append(book_properties)
+            if book_properties:
+                science_fiction_category_books.append(book_properties)
             book_counter += 1
             print(book_url)
     write_to_json_file(science_fiction_category_books, 'books')
