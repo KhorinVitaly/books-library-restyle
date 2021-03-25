@@ -43,11 +43,11 @@ def main():
         category_url = urljoin(ROOT_URL, BOOK_CATEGORY, i)
         response = requests.get(category_url, verify=False)
         soup = BeautifulSoup(response.text, 'html.parser')
-        book_card_tags = soup.find_all('table', 'd_book')
-        for tag in book_card_tags:
+        links_to_books = soup.select('.d_book .bookimage a')
+        for tag in links_to_books:
             if book_counter >= 100:
                 break
-            href = tag.find('a').attrs['href']
+            href = tag.attrs['href']
             book_url = urljoin(ROOT_URL, href)
             id = int(href.replace('b', '').replace('/', ''))
             book_properties = fetch_book_data(book_url, id)
